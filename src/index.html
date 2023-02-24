@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en-GB-oxendict">
+    <meta charset="utf-8">
+    <style>
+        h {
+            font-family: '微软雅黑', Courier, monospace;
+        }
+        .box {
+            font-family: '新宋体', Courier, monospace;
+            font-size: 80%;
+        }
+    </style>
+    <emu-intro id="intro">
+        Hello
+    </emu-intro>
+    <emu-clause id="pose-graph">
+        <h>姿势图</h>
+        <emu-clause>
+            <emu-clause id="pose-graph-structure">
+                <h>结构</h>
+                <p>姿势图是一种图结构。</p>
+                <emu-clause>
+                    <h>结点</h>
+                    <p>
+                        姿势图中的结点具有零或多个输入，并具有零或多个输出。结点的输入和输出的数量由结点类型确定，输入的数量可能是变化的，输出的数量是固定的。
+                    </p>
+                    <p>
+                        输入和输出都具有确定的类型。支持的类型如下：
+                        <ul>
+                            <li>姿势对象</li>
+                            <li>
+                                值类型。包括：
+                                <ul>
+                                    <li>数值</li>
+                                    <li>2、3、4 维向量</li>
+                                    <li>四元数</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        所有输入都存在一个常量值。
+                    </p>
+                    <emu-clause>
+                        <h>结点种类</h>
+                        <p>
+                            姿势图仅存在以下种类的结点：
+                            <ul>
+                                <li>
+                                    姿势结点。指仅输出一个姿势对象的结点。
+                                </li>
+                                <li>
+                                    XNode 结点。指存在任何输出、但并不是姿势结点的结点。
+                                </li>
+                                <li>
+                                    根输出结点。根输出结点是一种特殊的、内置在姿势图内的、无法额外添加的无输出结点。
+                                </li>
+                                <li>
+                                    注释结点。注释结点没有输入和输出，且关联了一段文本用做注释。
+                                </li>
+                            </ul>
+                        </p>
+                    </emu-clause>
+                </emu-clause>
+                <emu-clause>
+                    <h>结点连线</h>
+                    <p>可将一个结点的输出连接至另一个结点的输入，构成绑定。一个输入只能接受一个输出的连接，但一个输出可以连接到多个输入。</p>
+                    <p>所有输入都允许不存在绑定，如果输入不存在绑定，该输入使用其常量值。</p>
+                </emu-clause>
+                <emu-clause>
+                    <h>求值算法</h>
+                    <emu-clause>
+                        <h>姿势图求值</h>
+                        <emu-alg>
+                            1. 对根输出结点进行求值。
+                        </emu-alg>
+                    </emu-clause>
+                    <emu-clause>
+                        <h>根输出结点求值</h>
+                        <emu-alg>
+                            1. 如果结点的输入上存在绑定：
+                                1. 断言：绑定的源头为姿势结点。
+                                1. 对该绑定的源头进行求值。
+                            1. 否则，返回默认姿势。
+                        </emu-alg>
+                    </emu-clause>
+                </emu-clause>
+            </emu-clause>
+
+            <emu-clause>
+                <h> 姿势结点 </h>
+                <emu-clause id="motion-expr">
+                    <h> 姿势结点：播放动画 </h>
+                    <emu-clause>
+                        <h> 功能 </h>
+                        <p> 播放指定的动画。</p>
+                    </emu-clause>
+                    <enum-clause>
+                        <h>记录</h>
+                        <table>
+                            <tr> <th> 字段名 </th> <th> 字段类型 </th> <th> 含义 </th> </tr>
+                            <tr> <td> [[Motion]] </td> <td> _Motion_ </td> <td> 要进行采样的动画 </th> </tr>
+                        </table>
+                    </enum-clause>
+                    <emu-clause>
+                        <h> 更新 </h>
+                        <p> 步进当前动画为上下文指定的更新时间。  </p>
+                    </emu-clause>
+                    <emu-clause>
+                        <h> 求值 </h>
+                        <emu-alg>
+                            1. 如果结点的未指定动画，返回默认姿势。
+                            1. 否则，对当前的动画进行采样，返回采样后的姿势。
+                        </emu-alg>
+                    </emu-clause>
+                </emu-clause>
+
+                <emu-clause id="motion-expr">
+                    <h> 姿势结点：采样动画 </h>
+                    <emu-clause>
+                        <h> 功能 </h>
+                        <p> 采样指定动画的指定时间。</p>
+                    </emu-clause>
+                    <enum-clause>
+                        <h>记录</h>
+                        <table>
+                            <tr> <th> 字段名 </th> <th> 字段类型 </th> <th> 含义 </th> </tr>
+                            <tr> <td> [[Motion]] </td> <td> _Motion_ </td> <td> 要进行采样的动画。 </th> </tr>
+                            <tr> <td> [[Time]] </td> <td> _number_ </td> <td> 要进行采样的时间。 </th> </tr>
+                            <tr> <td> [[UseNormalizedTime]] </td> <td> _boolean_ </td> <td> _Time_ 是否代表标准化时间。 </th> </tr>
+                        </table>
+                    </enum-clause>
+                    <emu-clause>
+                        <h> 更新 </h>
+                        <p> 无。  </p>
+                    </emu-clause>
+                    <emu-clause>
+                        <h> 求值 </h>
+                        <emu-alg>
+                            1. 如果 _ee_._[[Motion]]_ 未指定，返回默认姿势。
+                            1. 让 _normalizedTime_ 为 0
+                            1. 如果 _ee_.[[UseNormalizedTime]] 为 _true_：
+                                1. 让 _normalizedTime_ 为 _ee_._[[Time]]_
+                            1. 否则：
+                                1. 让 _normalizedTime_ 为 _ee_._[[Time]] / _ee_._[[Motion]]_.duration_
+                            1. 返回 _ 采样动作([[Motion]], normalizedTime)_ 。
+                        </emu-alg>
+                    </emu-clause>
+                </emu-clause>
+            </emu-clause>
+            
+        </emu-clause>
+    </emu-clause>
+    <emu-clause id="pose-node">
+        <h>Pose Node</h>
+        <p>姿势结点是一种姿势图结点。</p>
+        <p>姿势结点只有一个输出，且输出类型为姿势对象。</p>
+    </emu-clause>
+</html>
